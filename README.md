@@ -33,11 +33,11 @@ onlineEntrance/
 
 - XAMPP (with PHP 7.4 or higher)
 - MySQL 5.7 or higher
-- Web browser (Chrome/Firefox recommended)
+- Web browser (Chrome/Brave/Firefox recommended)
 - Git (for cloning the repository)
 
 ## Database Schema
-database: onlineentrance
+Database Name: onlineentrance
 
 ### AdminCredentials Table
 ```sql
