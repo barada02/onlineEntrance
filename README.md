@@ -108,8 +108,8 @@ VALUES
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/yourusername/onlineEntrance.git
-   cd onlineEntrance
+   git clone https://github.com/barada02/onlineEntrance.git
+   
    ```
 
 2. **Setup XAMPP**
