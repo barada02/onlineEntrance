@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Login - Online Entrance Exam</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="css/student_style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="login-container">
+            <div class="login-header">
+                <i class="fas fa-user-graduate"></i>
+                <h1>Student Login</h1>
+            </div>
+            
+            <div id="error-message" class="error-message" style="display: none;">
+                <?php
+                    session_start();
+                    if(isset($_SESSION['error'])) {
+                        echo $_SESSION['error'];
+                        unset($_SESSION['error']);
+                    }
+                ?>
+            </div>
+
+            <form method="POST" action="process_login.php" class="login-form">
+                <div class="form-group">
+                    <label for="username"><i class="fas fa-user"></i></label>
+                    <input type="text" id="username" name="username" placeholder="Username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password"><i class="fas fa-lock"></i></label>
+                    <input type="password" id="password" name="password" placeholder="Password" required>
+                </div>
+                
+                <button type="submit" class="login-btn">Login</button>
+            </form>
+            
+            <div class="register-link">
+                <p>New student? <a href="registration.html">Register here</a></p>
+            </div>
+            
+            <div class="back-link">
+                <a href="../index.html"><i class="fas fa-arrow-left"></i> Back to Home</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

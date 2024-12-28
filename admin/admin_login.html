@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Online Entrance Exam</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="css/admin_style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="login-container">
+            <div class="login-header">
+                <i class="fas fa-user-shield"></i>
+                <h1>Admin Login</h1>
+            </div>
+            
+            <div id="notification" class="notification" style="display: none;">
+                <i class="notification-icon"></i>
+                <span class="notification-message"></span>
+            </div>
+
+            <form method="POST" action="process_login.php" class="login-form" id="loginForm">
+                <div class="form-group">
+                    <label for="username"><i class="fas fa-user"></i></label>
+                    <input type="text" id="username" name="username" placeholder="Username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password"><i class="fas fa-lock"></i></label>
+                    <input type="password" id="password" name="password" placeholder="Password" required>
+                </div>
+                
+                <button type="submit" class="login-btn">Login</button>
+            </form>
+            
+            <div class="back-link">
+                <a href="../index.html"><i class="fas fa-arrow-left"></i> Back to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Function to show notification
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            const icon = notification.querySelector('.notification-icon');
+            const messageSpan = notification.querySelector('.notification-message');
+            
+            // Set icon and color based on type
+            if (type === 'success') {
+                icon.className = 'notification-icon fas fa-check-circle';
+                notification.className = 'notification success';
+            } else if (type === 'error') {
+                icon.className = 'notification-icon fas fa-exclamation-circle';
+                notification.className = 'notification error';
+            }
+            
+            messageSpan.textContent = message;
+            notification.style.display = 'flex';
+            
+            // Hide notification after 5 seconds
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000);
+        }
+
+        // Check for URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get('error');
+        const success = urlParams.get('success');
+        
+        if (error) {
+            showNotification(decodeURIComponent(error), 'error');
+        } else if (success) {
+            showNotification(decodeURIComponent(success), 'success');
+        }
+    });
+    </script>
+</body>
+</html>

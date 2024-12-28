@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/registration_style.css">
+</head>
+<body>
+    <div class="container">
+        <a href="dashboard.php" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+        
+        <div class="form-container">
+            <div class="form-header">
+                <i class="fas fa-user-plus"></i>
+                <h2>Student Registration</h2>
+            </div>
+            
+            <form id="registrationForm" action="process_registration.php" method="POST">
+                <div class="input-group">
+                    <label for="fullname">Full Name</label>
+                    <input type="text" id="fullname" name="fullname" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="fathername">Father's Name</label>
+                    <input type="text" id="fathername" name="fathername" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="dob">Date of Birth</label>
+                    <input type="date" id="dob" name="dob" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="qualification">Qualification</label>
+                    <select id="qualification" name="qualification" required>
+                        <option value="">Select Qualification</option>
+                        <option value="10th">10th</option>
+                        <option value="12th">12th</option>
+                        <option value="Bachelor">Bachelor's Degree</option>
+                        <option value="Master">Master's Degree</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="subject">Exam Subject</label>
+                    <select id="subject" name="subject" required>
+                        <option value="">Select Subject</option>
+                        <option value="Math">Mathematics</option>
+                        <option value="CS">Computer Science</option>
+                    </select>
+                </div>
+
+                <!-- Hidden fields for credentials -->
+                <input type="hidden" id="username" name="username">
+                <input type="hidden" id="password" name="password">
+
+                <div class="button-group">
+                    <button type="submit" class="submit-btn">Register Student</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Credential Modal -->
+    <div id="credentialModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>Student Credentials</h2>
+            <p>Please save these credentials securely:</p>
+            <div class="credential-box">
+                <div class="credential-item">
+                    <strong>Username:</strong>
+                    <span id="displayUsername"></span>
+                    <button onclick="copyText('displayUsername')" class="copy-btn">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                <div class="credential-item">
+                    <strong>Password:</strong>
+                    <span id="displayPassword"></span>
+                    <button onclick="copyText('displayPassword')" class="copy-btn">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+            <button onclick="closeCredentialModal()" class="close-btn">Close</button>
+        </div>
+    </div>
+
+    <script>
+        function generateUsername(name, dob, subject) {
+            // Remove spaces and special characters from name
+            const cleanName = name.toLowerCase().replace(/[^a-z]/g, '');
+            
+            // Get year from DOB
+            const year = dob.split('-')[0];
+            
+            // Create username: first 4 letters of name + last 2 digits of year + subject
+            const username = cleanName.substring(0, 4) + year.slice(-2) + subject.toLowerCase();
+            return username;
+        }
+
+        function generatePassword() {
+            // Generate a random 8-character password with letters, numbers, and special characters
+            const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$';
+            let password = '';
+            for (let i = 0; i < 8; i++) {
+                password += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return password;
+        }
+
+        function copyText(elementId) {
+            const text = document.getElementById(elementId).textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Copied to clipboard!');
+            });
+        }
+
+        function showCredentialModal(username, password) {
+            document.getElementById('displayUsername').textContent = username;
+            document.getElementById('displayPassword').textContent = password;
+            document.getElementById('credentialModal').style.display = 'block';
+        }
+
+        function closeCredentialModal() {
+            document.getElementById('credentialModal').style.display = 'none';
+        }
+
+        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('fullname').value;
+            const dob = document.getElementById('dob').value;
+            const subject = document.getElementById('subject').value;
+
+            // Generate credentials
+            const username = generateUsername(name, dob, subject);
+            const password = generatePassword();
+
+            // Set hidden fields
+            document.getElementById('username').value = username;
+            document.getElementById('password').value = password;
+
+            // Submit form using FormData
+            const formData = new FormData(this);
+
+            // Debug log
+            console.log('Username:', username);
+            console.log('Password:', password);
+
+            fetch('process_registration.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    showCredentialModal(username, password);
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error registering student: ' + error.message);
+            });
+        });
+    </script>
+
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .credential-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .credential-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+        }
+
+        .copy-btn {
+            background: none;
+            border: none;
+            color: #3498db;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .copy-btn:hover {
+            color: #2980b9;
+        }
+
+        .close-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            background: #2980b9;
+        }
+    </style>
+</body>
+</html>
