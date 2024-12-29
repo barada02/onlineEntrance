@@ -33,11 +33,11 @@ onlineEntrance/
 
 - XAMPP (with PHP 7.4 or higher)
 - MySQL 5.7 or higher
-- Web browser (Chrome/Firefox recommended)
+- Web browser (Chrome/Brave/Firefox recommended)
 - Git (for cloning the repository)
 
 ## Database Schema
-database: onlineentrance
+Database Name: onlineentrance
 
 ### AdminCredentials Table
 ```sql
@@ -108,8 +108,8 @@ VALUES
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/yourusername/onlineEntrance.git
-   cd onlineEntrance
+   git clone https://github.com/barada02/onlineEntrance.git
+   
    ```
 
 2. **Setup XAMPP**
