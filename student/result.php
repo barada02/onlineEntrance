@@ -187,7 +187,7 @@ $student = $result->fetch_assoc();
 
         <div class="student-info">
             <div class="info-item">
-                <strong>Name:</strong> <?php echo htmlspecialchars($student['FullName']); ?>
+                <strong>Name:</strong> <?php echo htmlspecialchars($student['Name']); ?>
             </div>
             <div class="info-item">
                 <strong>Subject:</strong> <?php echo htmlspecialchars($student['ExamSubject']); ?>
