@@ -27,6 +27,11 @@ $student = $result->fetch_assoc();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Exam Results</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        function handleLogout() {
+            window.location.href = '../index.html';
+        }
+    </script>
     <style>
         * {
             margin: 0;
@@ -144,15 +149,6 @@ $student = $result->fetch_assoc();
             transition: background-color 0.3s;
         }
 
-        .btn-primary {
-            background: #3498db;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #2980b9;
-        }
-
         .btn-danger {
             background: #e74c3c;
             color: white;
@@ -219,12 +215,9 @@ $student = $result->fetch_assoc();
         </div>
 
         <div class="action-buttons">
-            <a href="dashboard.php" class="btn btn-primary">
-                <i class="fas fa-home"></i> Go to Dashboard
-            </a>
-            <a href="logout.php" class="btn btn-danger">
+            <button onclick="handleLogout()" class="btn btn-danger">
                 <i class="fas fa-sign-out-alt"></i> Logout
-            </a>
+            </button>
         </div>
     </div>
 </body>

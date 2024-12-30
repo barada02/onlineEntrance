@@ -47,14 +47,8 @@ const csQuestions = [
 ];
 
 // Load questions
-function loadQuestions(questions) {
+function loadQuestions() {
     const container = document.getElementById('questionsContainer');
-    if (!container || !questions) {
-        console.error('Container or questions not found');
-        return;
-    }
-    
-    container.innerHTML = ''; // Clear existing questions
     questions.forEach((q, index) => {
         const questionHTML = `
             <div class="question-card">
@@ -147,17 +141,7 @@ function confirmSubmit() {
 // Initialize when document is ready
 document.addEventListener('DOMContentLoaded', () => {
     // Get student's subject from PHP
-    let questions;
-    if (examSubject === "Math") {
-        questions = mathQuestions;
-    } else if (examSubject === "Computer Science") {
-        questions = csQuestions;
-    } else {
-        console.error('Invalid exam subject');
-        return;
-    }
-    
-    // Load questions and start timer
-    loadQuestions(questions);
+    const questions = examSubject === "Math" ? mathQuestions : csQuestions;
+    loadQuestions();
     startTimer(600); // 10 minutes
 });
