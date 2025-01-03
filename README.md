@@ -58,6 +58,10 @@ CREATE TABLE StudentRegistration (
     Qualification VARCHAR(50) NOT NULL,
     ExamSubject ENUM('Math', 'CS') NOT NULL
 );
+
+ALTER TABLE StudentRegistration
+ADD email VARCHAR(255);
+
 ```
 
 ### StudentCredentials Table

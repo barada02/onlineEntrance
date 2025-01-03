@@ -20,24 +20,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $name = mysqli_real_escape_string($conn, $_POST['fullname']);
         $fatherName = mysqli_real_escape_string($conn, $_POST['fathername']);
         $dob = mysqli_real_escape_string($conn, $_POST['dob']);
+        $email = mysqli_real_escape_string($conn, $_POST['email']);
         $qualification = mysqli_real_escape_string($conn, $_POST['qualification']);
         $subject = mysqli_real_escape_string($conn, $_POST['subject']);
         
         // Validate required fields
-        if (empty($name) || empty($fatherName) || empty($dob) || empty($qualification) || empty($subject)) {
+        if (empty($name) || empty($fatherName) || empty($dob) || empty($qualification) || empty($subject) || empty($email)) {
             throw new Exception("All fields are required");
         }
 
         // Insert student registration
-        $insert_query = "INSERT INTO StudentRegistration (Name, FatherName, DOB, Qualification, ExamSubject) 
-                        VALUES (?, ?, ?, ?, ?)";
+        $insert_query = "INSERT INTO StudentRegistration (Name, FatherName, DOB, Email, Qualification, ExamSubject) 
+                        VALUES (?, ?, ?, ?, ?, ?)";
         
         $stmt = $conn->prepare($insert_query);
         if (!$stmt) {
             throw new Exception("Database error: " . $conn->error);
         }
 
-        $stmt->bind_param("sssss", $name, $fatherName, $dob, $qualification, $subject);
+        $stmt->bind_param("ssssss", $name, $fatherName, $dob, $email, $qualification, $subject);
         
         if (!$stmt->execute()) {
             throw new Exception("Failed to register student: " . $stmt->error);
@@ -45,6 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $studentId = $conn->insert_id;
         $stmt->close();
+        $stmt = null; // Clear the statement after closing
 
         // Get credentials
         $username = isset($_POST['username']) ? mysqli_real_escape_string($conn, $_POST['username']) : null;
@@ -72,7 +74,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo json_encode([
             'success' => true,
             'message' => 'Student registered successfully',
-            'studentId' => $studentId
+            'studentId' => $studentId,
+            'email' => $email
         ]);
 
     } catch (Exception $e) {
@@ -84,10 +87,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         ]);
     }
 
-    if (isset($stmt)) {
+    // Only close if statement exists and hasn't been closed
+    if (isset($stmt) && $stmt !== null) {
         $stmt->close();
     }
-    $conn->close();
+    if ($conn) {
+        $conn->close();
+    }
 
 } else {
     echo json_encode([

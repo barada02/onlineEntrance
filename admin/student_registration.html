@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Registration</title>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="css/registration_style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 </head>
 <body>
     <div class="container">
@@ -33,6 +36,11 @@
                 <div class="input-group">
                     <label for="dob">Date of Birth</label>
                     <input type="date" id="dob" name="dob" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required>
                 </div>
 
                 <div class="input-group">
@@ -92,6 +100,11 @@
     </div>
 
     <script>
+        // Initialize EmailJS
+        (function() {
+            emailjs.init("CPyySUFXTzWkQNwhz");
+        })();
+
         function generateUsername(name, dob, subject) {
             // Remove spaces and special characters from name
             const cleanName = name.toLowerCase().replace(/[^a-z]/g, '');
@@ -131,48 +144,97 @@
             document.getElementById('credentialModal').style.display = 'none';
         }
 
+        function sendCredentialsEmail(email, username, password, fullname) {
+            const templateParams = {
+                to_email: email,
+                to_name: fullname,
+                username: username,
+                password: password
+            };
+
+            emailjs.send("service_nu5gwq2", "template_3uzcboo", templateParams)
+                .then(function(response) {
+                    Toastify({
+                        text: "Login credentials sent to your email successfully!",
+                        duration: 3000,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "#4CAF50"
+                    }).showToast();
+                }, function(error) {
+                    Toastify({
+                        text: "Failed to send email. Please note down your credentials.",
+                        duration: 3000,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "#f44336"
+                    }).showToast();
+                    console.error("Email sending failed:", error);
+                });
+        }
+
         document.getElementById('registrationForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
             const name = document.getElementById('fullname').value;
             const dob = document.getElementById('dob').value;
             const subject = document.getElementById('subject').value;
-
-            // Generate credentials
+            const email = document.getElementById('email').value;
+            
             const username = generateUsername(name, dob, subject);
             const password = generatePassword();
+            
+            // Show credentials in modal
+            showCredentialModal(username, password);
 
-            // Set hidden fields
-            document.getElementById('username').value = username;
-            document.getElementById('password').value = password;
-
-            // Submit form using FormData
+            // Create form data
             const formData = new FormData(this);
-
-            // Debug log
-            console.log('Username:', username);
-            console.log('Password:', password);
-
+            formData.append('username', username);
+            formData.append('password', password);
+            
+            // Send form data via fetch
             fetch('process_registration.php', {
                 method: 'POST',
                 body: formData
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    showCredentialModal(username, password);
+                    // Send email with credentials
+                    sendCredentialsEmail(email, username, password, name);
+                    
+                    Toastify({
+                        text: "Registration successful! Check your email for login credentials.",
+                        duration: 3000,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "#4CAF50"
+                    }).showToast();
+
+                    // Reset form after successful registration
+                    setTimeout(() => {
+                        this.reset();
+                        window.location.href = 'dashboard.php';
+                    }, 3000);
                 } else {
-                    alert('Error: ' + data.message);
+                    Toastify({
+                        text: "Registration failed: " + data.message,
+                        duration: 3000,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "#f44336"
+                    }).showToast();
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error registering student: ' + error.message);
+                Toastify({
+                    text: "An error occurred during registration",
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "#f44336"
+                }).showToast();
             });
         });
     </script>
